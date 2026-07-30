@@ -26,7 +26,7 @@ Over four tasks, I worked through a set of independent engineering problems span
 | 1 | **Advanced Data Structures** | Implemented a generalized max-heap in Java where each parent node can have `2^x` children instead of the usual 2, with configurable branching factor, dynamic resizing, and overflow-safe index arithmetic. See [`Task1PowerOfTwoMaxHeap.java`](./Task1PowerOfTwoMaxHeap.java). |
 | 2 | **Software Architecture** | Designed a UML class diagram for a configurable data processor, using a `Mode` strategy hierarchy (Dump / Passthrough / Validate) and a `DatabaseConnector` hierarchy (Postgres / Redis / Elastic), wired together through a `ModeFactory`. See [`Task_2_Processor_UML.pdf`](./Task_2_Processor_UML.pdf). |
 | 3 | **Relational Database Design** | Created an entity relationship diagram for Walmart's pet department, modeling products (food, toy, apparel), their manufacturers and compatible animals, customer transactions, and multi-location shipments — normalized to avoid redundant or nullable columns. See [`Task_3_ERD_Diagram.png`](./Task_3_ERD_Diagram.png). |
-| 4 | **Data Munging** | Wrote a Python ETL script that reconciles three differently-structured shipping CSVs into a single SQLite database, deduplicating products and aggregating per-shipment product quantities. See [`Task_4_Model_Answer.pdf`](./Task_4_Model_Answer.pdf). |
+| 4 | **Data Munging** | Wrote a Python ETL script that reconciles three differently-structured shipping CSVs into a single SQLite database, using `csv.DictReader` for column-name-based parsing and a `Counter` to aggregate per-shipment product quantities. See [`Task_4_Populated_Database.pdf`](./Task_4_Populated_Database.pdf). |
 
 ---
 
@@ -35,7 +35,7 @@ Over four tasks, I worked through a set of independent engineering problems span
 - **Task 1:** Generalized the classic binary heap to a `2^x`-ary heap — child/parent index math uses bit shifts instead of division for performance, with `long` arithmetic to avoid integer overflow at large branching factors.
 - **Task 2:** Used the Strategy pattern for processor modes and the Factory pattern (`ModeFactory`) to resolve a `ModeIdentifier` + `DatabaseIdentifier` pair into a fully wired `Mode` instance, keeping the `Processor` decoupled from concrete mode/connector implementations.
 - **Task 3:** Modeled the three product types (`PetFood`, `PetToy`, `PetApparel`) as subtypes of a shared `Product` supertype, avoiding duplicated manufacturer/animal relationships and eliminating nullable type-specific columns.
-- **Task 4:** Handled inconsistent source data — one spreadsheet with one row per shipment and another split across two files — by building an intermediate in-memory structure before writing to the database, so both formats funnel through the same insert logic.
+- **Task 4:** Handled inconsistent source data — one spreadsheet with one row per shipment and another split across two files (one row per product unit, plus a separate shipment-to-location mapping) — by building a `shipment_identifier -> (origin, destination)` lookup and a `Counter`-based tally of product quantities per shipment, then funneling both source formats through the same `get_or_create_product_id` / `insert_shipment` helpers.
 
 ---
 
@@ -59,7 +59,7 @@ Over four tasks, I worked through a set of independent engineering problems span
 ├── Task1PowerOfTwoMaxHeap.java                                # Generalized max-heap (Java)
 ├── Task_2_Processor_UML.pdf                                   # Data processor UML class diagram
 ├── Task_3_ERD_Diagram.png                                     # Pet department ERD
-├── Task_4_Model_Answer.pdf                                    # Shipment data ETL script (Python)
+├── Task_4_Populated_Database.pdf                               # Shipment data ETL script (Python)
 └── README.md
 ```
 
